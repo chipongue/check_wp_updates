@@ -76,15 +76,15 @@ def version(opts):
             '''
             Get the latest stable version WordPress
             '''
-            api_path = "https://api.wordpress.org/core/version-check/1.7/"
-            result = os.popen("curl -s %s "%api_path).read()
+            with urllib.request.urlopen("https://api.wordpress.org/core/version-check/1.7/") as url:
+                result = json.loads(url.read().decode())
 
             try:
-                latest = json.loads(result)["offers"][0]
-                current_version = (latest["version"])
+                latest = json.dumps(result["offers"][0]["version"])
+                current_version = latest
             except ValueError:
                 return False
-            
+
             if current_version == installed_version:
                 print('The latest stable version WordPress %s available in wordpress.org is installed'%current_version)
                 sys.exit(ExitOK)
